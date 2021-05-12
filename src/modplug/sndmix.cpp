@@ -8,13 +8,9 @@
 #include <sndfile.h>
 #include "tables.h"
 
-// added by me
-#define MODPLUG_PLAYER
-
-// removed by me
-//#ifdef MODPLUG_TRACKER
+#ifdef MODPLUG_TRACKER
 #define ENABLE_STEREOVU
-//#endif
+#endif
 
 // Volume ramp length, in 1/10 ms
 #define VOLUMERAMPLEN	146	// 1.46ms = 64 samples at 44.1kHz
@@ -51,10 +47,8 @@ extern DWORD MPPASMCALL X86_Convert32To8(LPVOID lpBuffer, int *, DWORD nSamples,
 extern DWORD MPPASMCALL X86_Convert32To16(LPVOID lpBuffer, int *, DWORD nSamples, LPLONG, LPLONG);
 extern DWORD MPPASMCALL X86_Convert32To24(LPVOID lpBuffer, int *, DWORD nSamples, LPLONG, LPLONG);
 extern DWORD MPPASMCALL X86_Convert32To32(LPVOID lpBuffer, int *, DWORD nSamples, LPLONG, LPLONG);
-#if 0
 extern UINT MPPASMCALL X86_AGC(int *pBuffer, UINT nSamples, UINT nAGC);
 extern VOID MPPASMCALL X86_Dither(int *pBuffer, UINT nSamples, UINT nBits);
-#endif
 extern VOID MPPASMCALL X86_InterleaveFrontRear(int *pFrontBuf, int *pRearBuf, DWORD nSamples);
 extern VOID MPPASMCALL X86_StereoFill(int *pBuffer, UINT nSamples, LPLONG lpROfs, LPLONG lpLOfs);
 extern VOID MPPASMCALL X86_MonoFromStereo(int *pMixBuf, UINT nSamples);
@@ -418,14 +412,16 @@ BOOL CSoundFile::ProcessRow()
 			m_nNextPattern = m_nCurrentPattern;
 		}
 		// Weird stuff?
-		if ((m_nPattern >= MAX_PATTERNS) || (!Patterns[m_nPattern])) return FALSE;
+		if ((m_nPattern >= MAX_PATTERNS) || (!Patterns[m_nPattern]) ||
+			PatternSize[m_nPattern] == 0) return FALSE;
 		// Should never happen
 		if (m_nRow >= PatternSize[m_nPattern]) m_nRow = 0;
 		m_nNextRow = m_nRow + 1;
 		if (m_nNextRow >= PatternSize[m_nPattern])
 		{
 			if (!(m_dwSongFlags & SONG_PATTERNLOOP)) m_nNextPattern = m_nCurrentPattern + 1;
-			m_nNextRow = 0;
+			m_nNextRow = m_nNextStartRow;
+			m_nNextStartRow = 0;
 		}
 		// Reset channel values
 		MODCHANNEL *pChn = Chn;
@@ -1239,5 +1235,3 @@ BOOL CSoundFile::ReadNote()
 	}
 	return TRUE;
 }
-
-

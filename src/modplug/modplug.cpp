@@ -4,8 +4,8 @@
  * Authors: Kenton Varda <temporal@gauge3d.org> (C interface wrapper)
  */
 
-#include "modplug.h"
 #include "stdafx.h"
+#include "modplug.h"
 #include "sndfile.h"
 
 struct _ModPlugFile
@@ -62,10 +62,10 @@ namespace ModPlug
 		if(updateBasicConfig)
 		{
 			CSoundFile::SetWaveConfig(gSettings.mFrequency,
-			                          gSettings.mBits,
+                                                  gSettings.mBits,
 			                          gSettings.mChannels);
 			CSoundFile::SetMixConfig(gSettings.mStereoSeparation,
-                                     gSettings.mMaxMixChannels);
+                                                 gSettings.mMaxMixChannels);
 
 			gSampleSize = gSettings.mBits / 8 * gSettings.mChannels;
 		}
@@ -137,7 +137,9 @@ unsigned int ModPlug_GetMasterVolume(ModPlugFile* file)
 
 void ModPlug_SetMasterVolume(ModPlugFile* file,unsigned int cvol)
 {
-	file->mSoundFile.SetMasterVolume((UINT)cvol, TRUE);
+	(void)file->mSoundFile.SetMasterVolume( (UINT)cvol,
+						FALSE );
+	return ;
 }
 
 int ModPlug_GetCurrentSpeed(ModPlugFile* file)
@@ -232,6 +234,8 @@ unsigned int ModPlug_NumChannels(ModPlugFile* file)
 	return file->mSoundFile.GetNumChannels();
 }
 
+
+
 unsigned int ModPlug_GetChannelVU(ModPlugFile* file, unsigned channel)
 {
 	return file->mSoundFile.GetChannelVU(channel);
@@ -251,6 +255,9 @@ bool ModPlug_IsChannelMuted(ModPlugFile* file, unsigned channel)
     return file->mSoundFile.IsChannelMuted(channel);
 }
 
+
+
+
 unsigned int ModPlug_SampleName(ModPlugFile* file,unsigned int qual,char* buff)
 {
 	return file->mSoundFile.GetSampleName(qual,buff);
@@ -262,7 +269,7 @@ unsigned int ModPlug_InstrumentName(ModPlugFile* file,unsigned int qual,char* bu
 }
 
 ModPlugNote* ModPlug_GetPattern(ModPlugFile* file,int pattern,unsigned int* numrows) {
-	if ( pattern<MAX_PATTERNS ) {
+	if ( pattern<MAX_PATTERNS && pattern >= 0) {
 		if (file->mSoundFile.Patterns[pattern]) {
 			if (numrows) *numrows=(unsigned int)file->mSoundFile.PatternSize[pattern];
 			return (ModPlugNote*)file->mSoundFile.Patterns[pattern];
@@ -277,11 +284,12 @@ void ModPlug_Seek(ModPlugFile* file, int millisecond)
 	int maxtime = file->mSoundFile.GetSongTime() * 1000;
 	float postime;
 
-	if(millisecond > maxtime) {
+	if(millisecond > maxtime)
 		millisecond = maxtime;
-	}
 	maxpos = file->mSoundFile.GetMaxPosition();
-	postime = (float)maxpos / (float)maxtime;
+	postime = 0.0f;
+	if (maxtime != 0)
+		postime = (float)maxpos / (float)maxtime;
 
 	file->mSoundFile.SetCurrentPos((int)(millisecond * postime));
 }
@@ -294,5 +302,5 @@ void ModPlug_GetSettings(ModPlug_Settings* settings)
 void ModPlug_SetSettings(const ModPlug_Settings* settings)
 {
 	memcpy(&ModPlug::gSettings, settings, sizeof(ModPlug_Settings));
-	ModPlug::UpdateSettings(false); // do not update basic configuration
+	ModPlug::UpdateSettings(false); // do not update basic config.
 }

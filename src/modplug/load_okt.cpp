@@ -11,9 +11,7 @@
 #include "stdafx.h"
 #include "sndfile.h"
 
-#ifdef __GNUC__
-#pragma GCC diagnostic ignored "-Wunused-but-set-variable"
-#endif
+//#pragma warning(disable:4244)
 
 typedef struct OKTFILEHEADER
 {

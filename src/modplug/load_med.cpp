@@ -589,7 +589,7 @@ BOOL CSoundFile::ReadMed(const BYTE *lpStream, DWORD dwMemLength)
 	#endif
 	} else
 	{
-		if ((pmsh->flags & MMD_FLAG_8CHANNEL) && deftempo > 0 && deftempo <= 10)
+		if (pmsh->flags & MMD_FLAG_8CHANNEL && deftempo > 0 && deftempo <= 10)
 		{
 			deftempo = bpmvals[deftempo-1];
 		} else {
@@ -666,7 +666,8 @@ BOOL CSoundFile::ReadMed(const BYTE *lpStream, DWORD dwMemLength)
 			{
 				pseq = bswapBE32(((LPDWORD)(lpStream+playseqtable))[nplayseq]);
 			}
-			if ((pseq) && (pseq < dwMemLength - sizeof(MMD2PLAYSEQ)))
+			if ((pseq) && dwMemLength > sizeof(MMD2PLAYSEQ) &&
+				(pseq < dwMemLength - sizeof(MMD2PLAYSEQ)))
 			{
 				const MMD2PLAYSEQ *pmps = (MMD2PLAYSEQ *)(lpStream + pseq);
 				if (!m_szNames[0][0]) memcpy(m_szNames[0], pmps->name, 31);
@@ -695,7 +696,7 @@ BOOL CSoundFile::ReadMed(const BYTE *lpStream, DWORD dwMemLength)
 		{
 			for (UINT i8ch=0; i8ch<4; i8ch++)
 			{
-				if (pmex->channelsplit[i8ch]) --m_nChannels;
+				if (pmex->channelsplit[i8ch]) m_nChannels++;
 			}
 		}
 		// Song Comments
@@ -810,7 +811,8 @@ BOOL CSoundFile::ReadMed(const BYTE *lpStream, DWORD dwMemLength)
 	}
 	// Reading patterns (blocks)
 	if (wNumBlocks > MAX_PATTERNS) wNumBlocks = MAX_PATTERNS;
-	if ((!dwBlockArr) || (dwBlockArr > dwMemLength - 4*wNumBlocks)) return TRUE;
+	if ((!dwBlockArr) || (dwMemLength < 4*wNumBlocks) ||
+		(dwBlockArr > dwMemLength - 4*wNumBlocks)) return TRUE;
 	pdwTable = (LPDWORD)(lpStream + dwBlockArr);
 	playtransp += (version == '3') ? 24 : 48;
 	for (UINT iBlk=0; iBlk<wNumBlocks; iBlk++)
@@ -927,5 +929,3 @@ BOOL CSoundFile::ReadMed(const BYTE *lpStream, DWORD dwMemLength)
 	}
 	return TRUE;
 }
-
-
