@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8" standalone="no"?>
 <qnx xmlns="http://www.qnx.com/schemas/application/1.0">
-    <id>com.idispatch.modplayer</id>
+    <id>com.extrowerk.modplayer</id>
     <name>
        ModPlayer
        <text xml:lang="ru">ModPlayer</text>
@@ -8,7 +8,7 @@
        <text xml:lang="es">ModPlayer</text>
        <text xml:lang="fr">ModPlayer</text>
     </name>
-    <versionNumber>4.7.9</versionNumber>
+    <versionNumber>4.7.10</versionNumber>
     <packageLocale>ru,zh,es,fr</packageLocale>
     <buildId>0</buildId>
     <description>
@@ -108,7 +108,7 @@
         <autoOrients>true</autoOrients>
         <systemChrome>none</systemChrome>
     </initialWindow>
-    <invoke-target id="com.idispatch.modplayer">
+    <invoke-target id="com.extrowerk.modplayer">
         <invoke-target-type>application</invoke-target-type>
         <invoke-target-name>ModPlayer</invoke-target-name>
         <icon>
