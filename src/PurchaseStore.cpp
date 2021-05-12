@@ -247,6 +247,5 @@ void PurchaseStore::loadLocalPurchases() {
 }
 
 bool PurchaseStore::isModPlayerPlusEdition() const {
-    bb::ApplicationInfo appInfo;
-    return appInfo.title() == "ModPlayer Plus";
+    return true;
 }

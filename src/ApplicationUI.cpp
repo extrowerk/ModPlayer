@@ -182,7 +182,7 @@ bool ApplicationUI::isForeground() const {
 }
 
 bool ApplicationUI::isExtendedVersion() {
-    return m_purchaseStore.purchased();
+    return true;
 }
 
 void ApplicationUI::onProcessStateChanged(bb::ProcessState::Type processState) {
